@@ -1,0 +1,1043 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FastMed Service Desk</title>
+  <style>
+    :root {
+      --font-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --color-background-main: #f2e5d4;
+      --color-background-secondary: #fff5e8;
+      --color-background-panel: #f9efe4;
+      --color-border: #d7c2ac;
+      --color-border-soft: #e6d7c7;
+      --color-text-primary: #3f2f25;
+      --color-text-secondary: #7a6354;
+      --color-text-muted: #9b7f70;
+      --color-accent: #6b4d8d;
+      --color-accent-soft: #e8dbe9;
+      --border-radius-lg: 24px;
+      --border-radius-md: 16px;
+      --shadow-soft: 0 18px 45px rgba(86, 61, 43, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-sans);
+      background: linear-gradient(180deg, #f9efe4 0%, #f2e5d4 100%);
+      color: var(--color-text-primary);
+    }
+
+    body > .page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .frame {
+      display: flex;
+      gap: 18px;
+      min-height: 680px;
+    }
+
+    .sidebar {
+      width: 240px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--color-border-soft);
+      border-radius: var(--border-radius-lg);
+      padding: 18px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .sidebar-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--color-border-soft);
+      margin-bottom: 8px;
+    }
+
+    .sidebar-header p:first-child {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-header p:last-child {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: background 220ms ease, color 220ms ease;
+      background: transparent;
+      border: none;
+      text-align: left;
+    }
+
+    .sidebar-item:hover,
+    .sidebar-item.active {
+      background: rgba(105, 78, 136, 0.08);
+      color: var(--color-text-primary);
+    }
+
+    .sidebar-item.active {
+      font-weight: 600;
+      border-left: 3px solid var(--color-accent);
+    }
+
+    .sidebar-item .nav-icon {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .sidebar-item .badge {
+      margin-left: auto;
+      min-width: 28px;
+      text-align: center;
+      padding: 1px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #7a6354;
+      background: rgba(232, 211, 190, 0.5);
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding: 18px 22px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(215, 194, 172, 0.7);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .page-header h1 {
+      margin: 0;
+      font-size: 28px;
+      color: var(--color-text-primary);
+    }
+
+    .theme-button {
+      border: none;
+      background: rgba(107, 77, 141, 0.16);
+      color: var(--color-text-primary);
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 180ms ease, color 180ms ease;
+    }
+
+    .theme-button:hover {
+      background: rgba(107, 77, 141, 0.24);
+    }
+
+    .panel-card,
+    .table-card {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(215, 194, 172, 0.65);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 22px;
+    }
+
+    .content-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .content-header .title {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .content-header .subtitle {
+      margin: 6px 0 0;
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+
+    .button-primary {
+      border: none;
+      background: var(--color-accent);
+      color: white;
+      border-radius: 14px;
+      padding: 12px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: filter 180ms ease, transform 120ms ease;
+    }
+
+    .button-primary:hover {
+      filter: brightness(1.06);
+      transform: translateY(-1px);
+    }
+
+    .button-page-tone {
+      background: rgba(215, 194, 172, 0.24);
+      color: #5a3921;
+      border: 1px solid rgba(215, 194, 172, 0.4);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 180ms ease, border-color 180ms ease, transform 120ms ease;
+    }
+
+    .button-page-tone:hover {
+      background: rgba(215, 194, 172, 0.34);
+      border-color: rgba(215, 194, 172, 0.55);
+      transform: translateY(-1px);
+    }
+
+    body.dark-theme {
+      background: #161823;
+      color: #f3f4f8;
+    }
+
+    body.dark-theme .page {
+      background: transparent;
+    }
+
+    body.dark-theme .page-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(87, 97, 129, 0.45);
+    }
+
+    body.dark-theme .page-header h1 {
+      color: #f3f4f8;
+    }
+
+    body.dark-theme .page-header p {
+      color: #c4c7d8;
+    }
+
+    body.dark-theme .panel-card,
+    body.dark-theme .table-card,
+    body.dark-theme .modal-card,
+    body.dark-theme .sidebar,
+    body.dark-theme .service-card {
+      background: rgba(31, 35, 49, 0.92);
+      border-color: rgba(87, 97, 129, 0.55);
+      color: #f3f4f8;
+    }
+
+    body.dark-theme .sidebar-item {
+      color: #c4c7d8;
+    }
+
+    body.dark-theme .sidebar-item:hover,
+    body.dark-theme .sidebar-item.active {
+      background: rgba(107, 77, 141, 0.12);
+      color: white;
+    }
+
+    body.dark-theme .stat-box {
+      background: rgba(48, 53, 74, 0.8);
+      border-color: rgba(87, 97, 129, 0.5);
+    }
+
+    body.dark-theme .status-pill.status-open {
+      background: #2a3a5a;
+      color: #98c7ff;
+    }
+
+    body.dark-theme .status-pill.status-progress {
+      background: #3a3c52;
+      color: #f7d77c;
+    }
+
+    body.dark-theme .status-pill.status-resolved {
+      background: #23432e;
+      color: #b9e8b4;
+    }
+
+    body.dark-theme .status-pill.status-urgent {
+      background: #4e2d36;
+      color: #ffb7c5;
+    }
+
+    body.dark-theme .button-primary,
+    body.dark-theme .button-page-tone {
+      box-shadow: none;
+    }
+
+    body.dark-theme .button-page-tone {
+      background: rgba(255, 255, 255, 0.08);
+      color: #f3f4f8;
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    body.dark-theme .button-page-tone:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    body.dark-theme .button-primary {
+      background: #6b4d8d;
+    }
+
+    body.dark-theme .content-header .subtitle,
+    body.dark-theme p,
+    body.dark-theme label {
+      color: #c4c7d8;
+    }
+
+    body.dark-theme .panel-card p,
+    body.dark-theme .panel-card .subtitle {
+      color: #c4c7d8 !important;
+    }
+
+    body.dark-theme .stat-box strong {
+      color: #f4f6fb;
+    }
+
+    body.dark-theme .stat-box small,
+    body.dark-theme .service-card p,
+    body.dark-theme .panel-card .subtitle {
+      color: #b0b8d0;
+    }
+
+    body.dark-theme .service-card h3 {
+      color: #f3f4f8;
+    }
+
+    body.dark-theme .sidebar-item .badge {
+      color: #e6e9f2;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    body.dark-theme .sidebar-header p,
+    body.dark-theme .sidebar-header p:first-child,
+    body.dark-theme .sidebar-header p:last-child {
+      color: #c4c7d8;
+    }
+
+    body.dark-theme .theme-button {
+      color: #f4f5fb;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    body.dark-theme input,
+    body.dark-theme select,
+    body.dark-theme textarea {
+      background: rgba(31, 35, 49, 0.9);
+      border-color: rgba(87, 97, 129, 0.8);
+      color: #f3f4f8;
+    }
+
+    body.dark-theme input::placeholder,
+    body.dark-theme textarea::placeholder {
+      color: #9aa3c6;
+      opacity: 1;
+    }
+
+    body.dark-theme table,
+    body.dark-theme th,
+    body.dark-theme td {
+      color: #e6e9f2;
+    }
+
+    body.dark-theme thead th {
+      border-bottom-color: rgba(87, 97, 129, 0.9);
+    }
+
+    body.dark-theme tbody tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .stat-box {
+      padding: 18px;
+      border-radius: 18px;
+      background: #f7e7d7;
+      border: 1px solid rgba(215, 194, 172, 0.6);
+    }
+
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .service-card {
+      background: rgba(249, 239, 228, 0.95);
+      border: 1px solid rgba(215, 194, 172, 0.65);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 12px 24px rgba(83, 58, 41, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .service-card h3 {
+      margin: 0;
+      font-size: 16px;
+      color: var(--color-text-primary);
+    }
+
+    .service-card p {
+      margin: 0;
+      color: var(--color-text-secondary);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .service-card .service-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(107, 77, 141, 0.1);
+      color: var(--color-accent);
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    body.dark-theme .panel-card p,
+    body.dark-theme .panel-card .subtitle,
+    body.dark-theme .content-header .subtitle,
+    body.dark-theme .service-card p,
+    body.dark-theme .table-controls input::placeholder,
+    body.dark-theme .modal-card p,
+    body.dark-theme .sidebar-header p,
+    body.dark-theme .sidebar-header p:first-child,
+    body.dark-theme .sidebar-header p:last-child {
+      color: #cfd5e7 !important;
+    }
+
+    body.dark-theme .stat-box {
+      background: rgba(30, 34, 48, 0.9);
+      border-color: rgba(84, 93, 122, 0.45);
+    }
+
+    body.dark-theme .stat-box strong,
+    body.dark-theme .stat-box small {
+      color: #f3f5fb;
+    }
+
+    body.dark-theme .service-card {
+      background: rgba(20, 24, 38, 0.94);
+      border-color: rgba(84, 93, 122, 0.6);
+    }
+
+    .stat-box small {
+      color: var(--color-text-muted);
+      font-size: 12px;
+    }
+
+    .stat-box strong {
+      display: block;
+      margin-top: 10px;
+      font-size: 26px;
+      color: var(--color-text-primary);
+    }
+
+    .table-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .table-controls input {
+      flex: 1;
+      border: 1px solid var(--color-border-soft);
+      border-radius: 14px;
+      background: #f8efe7;
+      color: var(--color-text-primary);
+      padding: 12px 14px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .table-controls input::placeholder {
+      color: var(--color-text-muted);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th,
+    td {
+      padding: 14px 16px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    thead th {
+      color: var(--color-text-muted);
+      font-weight: 600;
+      border-bottom: 1px solid var(--color-border-soft);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--color-border-soft);
+      transition: background 180ms;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 245, 232, 0.8);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    .status-open { background: #e7f2ff; color: #1d498a; }
+    .status-progress { background: #fff4dd; color: #7a5100; }
+    .status-resolved { background: #e6f4df; color: #2f5824; }
+    .status-urgent { background: #fde8e9; color: #9c2a2d; }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(53, 36, 22, 0.35);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 60;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 460px;
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 24px;
+      border: 1px solid var(--color-border-soft);
+      padding: 26px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 19px;
+      color: var(--color-text-primary);
+    }
+
+    .close-button {
+      border: none;
+      background: transparent;
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+    }
+
+    .field-group {
+      display: grid;
+      gap: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-bottom: 6px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--color-border-soft);
+      border-radius: 14px;
+      background: #fbf2ea;
+      color: var(--color-text-primary);
+      font-size: 14px;
+      padding: 12px 14px;
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 96px;
+    }
+
+    .modal-footer {
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    @media (max-width: 980px) {
+      .frame {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="page-header">
+      <div>
+        <p style="margin: 0; font-size: 13px; color: var(--color-text-muted);">FastMed TI</p>
+        <h1 style="margin: 6px 0 0; font-size: 26px; letter-spacing: -0.03em;">Service Desk</h1>
+      </div>
+      <button id="globalThemeToggle" class="theme-button" type="button" onclick="toggleTheme()" aria-label="Alternar tema">
+        <span id="globalThemeIcon">☀</span>
+        <span id="globalThemeLabel">Tema claro</span>
+      </button>
+    </div>
+    <div class="frame">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <p>FastMed TI</p>
+          <p>Service Desk</p>
+        </div>
+        <button class="sidebar-item active" type="button" data-page="painel" onclick="setPage('painel')">Painel</button>
+        <button class="sidebar-item" type="button" data-page="chamados" onclick="setPage('chamados')">Chamados <span class="badge">12</span></button>
+        <button class="sidebar-item" type="button" data-page="incidentes" onclick="setPage('incidentes')">Incidentes <span class="badge">3</span></button>
+        <button class="sidebar-item" type="button" data-page="catalogo" onclick="setPage('catalogo')">Catálogo</button>
+        <button class="sidebar-item" type="button" data-page="relatorios" onclick="setPage('relatorios')">Relatórios</button>
+      </aside>
+
+      <main class="content">
+        <section class="panel-card page-section" data-page="painel">
+          <div class="content-header">
+            <div>
+              <h1 class="title">Painel de chamados</h1>
+              <p class="subtitle">FastMed Distribuidora — Suporte em TI</p>
+            </div>
+            <button class="button-page-tone" type="button" onclick="showModal()">+ Abrir novo chamado</button>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-box">
+              <small>Total abertos</small>
+              <strong>12</strong>
+            </div>
+            <div class="stat-box">
+              <small>Em andamento</small>
+              <strong>5</strong>
+            </div>
+            <div class="stat-box">
+              <small>Urgentes</small>
+              <strong>3</strong>
+            </div>
+            <div class="stat-box">
+              <small>Resolvidos hoje</small>
+              <strong>7</strong>
+            </div>
+          </div>
+
+          <div class="panel-grid" style="display: grid; gap: 18px; margin-top: 18px;">
+            <div class="table-card" style="padding: 18px;">
+              <div class="content-header" style="margin-bottom: 16px;">
+                <div>
+                  <h2 class="title" style="font-size: 18px;">Chamados recentes</h2>
+                  <p class="subtitle">Últimos chamados atualizados no painel.</p>
+                </div>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>N°</th>
+                    <th>Descrição</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>#0041</td>
+                    <td>Sistema de pedidos fora do ar</td>
+                    <td><span class="status-pill status-progress">Em andamento</span></td>
+                  </tr>
+                  <tr>
+                    <td>#0040</td>
+                    <td>Erro após atualização do sistema</td>
+                    <td><span class="status-pill status-open">Aberto</span></td>
+                  </tr>
+                  <tr>
+                    <td>#0039</td>
+                    <td>Impressora sem conexão</td>
+                    <td><span class="status-pill status-progress">Em andamento</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="table-card page-section" data-page="chamados" hidden>
+          <div class="content-header">
+            <div>
+              <h1 class="title">Chamados</h1>
+              <p class="subtitle">Gerencie todas as solicitações abertas.</p>
+            </div>
+            <button class="button-page-tone" type="button" onclick="showModal()">+ Abrir novo chamado</button>
+          </div>
+
+          <div class="table-controls">
+            <input type="text" placeholder="Buscar chamados..." aria-label="Buscar chamados" />
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>N° chamado</th>
+                <th>Descrição</th>
+                <th>Solicitante</th>
+                <th>Prioridade</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>#0041</td>
+                <td>Sistema de pedidos fora do ar</td>
+                <td>Logística</td>
+                <td><span class="status-pill status-urgent">Urgente</span></td>
+                <td><span class="status-pill status-progress">Em andamento</span></td>
+              </tr>
+              <tr>
+                <td>#0040</td>
+                <td>Erro após atualização do sistema</td>
+                <td>Estoque</td>
+                <td><span class="status-pill status-urgent">Urgente</span></td>
+                <td><span class="status-pill status-open">Aberto</span></td>
+              </tr>
+              <tr>
+                <td>#0039</td>
+                <td>Impressora sem conexão</td>
+                <td>Administrativo</td>
+                <td><span class="status-pill status-progress">Média</span></td>
+                <td><span class="status-pill status-progress">Em andamento</span></td>
+              </tr>
+              <tr>
+                <td>#0038</td>
+                <td>Acesso negado ao módulo de estoque</td>
+                <td>Suporte</td>
+                <td><span class="status-pill status-open">Baixa</span></td>
+                <td><span class="status-pill status-resolved">Resolvido</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="table-card page-section" data-page="incidentes" hidden>
+          <div class="content-header">
+            <div>
+              <h1 class="title">Incidentes</h1>
+              <p class="subtitle">Acompanhe incidentes críticos em tempo real.</p>
+            </div>
+            <button class="button-page-tone" type="button" onclick="showModal()">+ Abrir novo chamado</button>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-box">
+              <small>Total de incidentes</small>
+              <strong>8</strong>
+            </div>
+            <div class="stat-box">
+              <small>Críticos</small>
+              <strong>4</strong>
+            </div>
+            <div class="stat-box">
+              <small>Em investigação</small>
+              <strong>3</strong>
+            </div>
+            <div class="stat-box">
+              <small>Resolvidos hoje</small>
+              <strong>2</strong>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>N° incidente</th>
+                <th>Descrição</th>
+                <th>Equipe</th>
+                <th>Prioridade</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>#102</td>
+                <td>Falha no servidor de e-mail</td>
+                <td>Infra</td>
+                <td><span class="status-pill status-urgent">Alta</span></td>
+                <td><span class="status-pill status-progress">Em andamento</span></td>
+              </tr>
+              <tr>
+                <td>#101</td>
+                <td>Queda na rede Wi-Fi</td>
+                <td>Rede</td>
+                <td><span class="status-pill status-progress">Média</span></td>
+                <td><span class="status-pill status-open">Aberto</span></td>
+              </tr>
+              <tr>
+                <td>#100</td>
+                <td>Erro de autenticação único</td>
+                <td>Segurança</td>
+                <td><span class="status-pill status-open">Baixa</span></td>
+                <td><span class="status-pill status-resolved">Resolvido</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="panel-card page-section" data-page="relatorios" hidden>
+          <div class="content-header">
+            <div>
+              <h1 class="title">Relatórios</h1>
+              <p class="subtitle">Visão geral das métricas de suporte.</p>
+            </div>
+            <button class="button-page-tone" type="button" onclick="showModal()">+ Abrir novo chamado</button>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-box">
+              <small>Chamados este mês</small>
+              <strong>68</strong>
+            </div>
+            <div class="stat-box">
+              <small>Tempo médio de resposta</small>
+              <strong>2h 18m</strong>
+            </div>
+            <div class="stat-box">
+              <small>Incidentes críticos</small>
+              <strong>4</strong>
+            </div>
+            <div class="stat-box">
+              <small>SLA cumprido</small>
+              <strong>94%</strong>
+            </div>
+          </div>
+
+          <div class="table-card" style="margin-top: 18px;">
+            <div class="content-header">
+              <div>
+                <h2 class="title">Resumo de atendimento</h2>
+              </div>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Relatório</th>
+                  <th>Valor</th>
+                  <th>Tendência</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Chamados resolvidos</td>
+                  <td>52</td>
+                  <td><span class="status-pill status-progress">Estável</span></td>
+                </tr>
+                <tr>
+                  <td>Tempo de resolução</td>
+                  <td>1h 42m</td>
+                  <td><span class="status-pill status-open">Melhorando</span></td>
+                </tr>
+                <tr>
+                  <td>Pedidos escalados</td>
+                  <td>9</td>
+                  <td><span class="status-pill status-urgent">Atenção</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel-card page-section" data-page="catalogo" hidden>
+          <div class="content-header">
+            <div>
+              <h1 class="title">Catálogo de Serviços</h1>
+              <p class="subtitle">Escolha o serviço desejado para chamar a equipe de TI.</p>
+            </div>
+            <button class="button-page-tone" type="button" onclick="showModal()">+ Abrir novo chamado</button>
+          </div>
+
+          <div class="service-grid">
+            <article class="service-card">
+              <span class="service-badge">1</span>
+              <h3>Suporte a hardware</h3>
+              <p>Atendimento para impressoras e computadores com problemas de funcionamento.</p>
+            </article>
+
+            <article class="service-card">
+              <span class="service-badge">2</span>
+              <h3>Acesso e permissões</h3>
+              <p>Solicitação de acesso a sistemas e ajuste de permissões para usuários.</p>
+            </article>
+
+            <article class="service-card">
+              <span class="service-badge">3</span>
+              <h3>Solicitação de novo equipamento</h3>
+              <p>Pedido de notebooks, mouses, teclados ou outros periféricos para a área.</p>
+            </article>
+
+            <article class="service-card">
+              <span class="service-badge">4</span>
+              <h3>Suporte ao sistema de pedidos</h3>
+              <p>Ajuda com falhas ou dúvidas no uso do sistema de pedidos da empresa.</p>
+            </article>
+
+            <article class="service-card">
+              <span class="service-badge">5</span>
+              <h3>Configuração de e-mail</h3>
+              <p>Configuração de contas corporativas e solução de problemas de e-mail.</p>
+            </article>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modal-title">Abrir novo chamado</h2>
+        <button class="close-button" type="button" onclick="hideModal()" aria-label="Fechar modal">×</button>
+      </div>
+      <form>
+        <div class="field-group">
+          <div>
+            <label for="requester">Solicitante</label>
+            <input id="requester" type="text" placeholder="Nome do solicitante" />
+          </div>
+          <div>
+            <label for="area">Área</label>
+            <select id="area">
+              <option>Logística</option>
+              <option>Estoque</option>
+              <option>Administrativo</option>
+              <option>Suporte TI</option>
+            </select>
+          </div>
+          <div>
+            <label for="description">Descrição do problema</label>
+            <textarea id="description" placeholder="Descreva o problema..."></textarea>
+          </div>
+          <div>
+            <label for="priority">Prioridade</label>
+            <select id="priority">
+              <option>Baixa</option>
+              <option>Média</option>
+              <option>Urgente</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="button-primary" type="button" onclick="hideModal()">Abrir chamado</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const modal = document.getElementById('modal');
+    const sections = document.querySelectorAll('.page-section');
+    const sidebarItems = document.querySelectorAll('.sidebar-item');
+
+    function showModal() { modal.classList.add('active'); }
+    function hideModal() { modal.classList.remove('active'); }
+
+    function setPage(page) {
+      sections.forEach(section => {
+        section.hidden = section.dataset.page !== page;
+      });
+      sidebarItems.forEach(item => {
+        item.classList.toggle('active', item.dataset.page === page);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setPage('painel');
+      const savedTheme = localStorage.getItem('fastmed-theme');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+      }
+      updateThemeToggle();
+    });
+
+    function toggleTheme() {
+      const isDark = document.body.classList.toggle('dark-theme');
+      localStorage.setItem('fastmed-theme', isDark ? 'dark' : 'light');
+      updateThemeToggle();
+    }
+
+    function updateThemeToggle() {
+      const themeIcon = document.getElementById('globalThemeIcon');
+      const themeLabel = document.getElementById('globalThemeLabel');
+      const dark = document.body.classList.contains('dark-theme');
+      if (themeIcon) themeIcon.textContent = dark ? '🌙' : '☀';
+      if (themeLabel) themeLabel.textContent = dark ? 'Modo escuro' : 'Modo claro';
+    }
+  </script>
+</body>
+</html>
